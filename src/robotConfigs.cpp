@@ -5,9 +5,9 @@
 #include "intake.h"
 
 // left motor group
-pros::MotorGroup left_motor_group({-17, -16}, pros::MotorGears::blue);
+pros::MotorGroup left_motor_group({-15, -13}, pros::MotorGears::blue);
 // right motor group
-pros::MotorGroup right_motor_group({13, 14}, pros::MotorGears::blue);
+pros::MotorGroup right_motor_group({19, 11}, pros::MotorGears::blue);
 
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&left_motor_group, // left motor group
@@ -19,11 +19,11 @@ lemlib::Drivetrain drivetrain(&left_motor_group, // left motor group
 );
 
 // imu
-pros::Imu imu(20);
+pros::Imu imu(14);
 // horizontal tracking wheel encoder
-pros::Rotation horizontal_encoder(11);
+pros::Rotation horizontal_encoder(18);
 // vertical tracking wheel encoder
-pros::Rotation vertical_encoder(15);
+pros::Rotation vertical_encoder(13);
 // horizontal tracking wheel
 lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, 1);
 // vertical tracking wheel

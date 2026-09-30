@@ -6,7 +6,7 @@
 # include "intake.h"
 
 // two motors for the lift
-pros::MotorGroup liftMotors({18, 19}, pros::MotorGears::green);
+pros::MotorGroup liftMotors({16, -20}, pros::MotorGears::green);
 
 // speed of the lift
 int liftSpeed = 40;

@@ -4,7 +4,7 @@
 # include "robotConfigs.h"
 # include "intake.h"
 
-pros::MotorGroup intake_motors({20, -15}, pros::MotorGears::green);
+pros::MotorGroup intake_motors({20, -17}, pros::MotorGears::green);
 
 // speed of the intake
 int intakeSpeed = 100;
