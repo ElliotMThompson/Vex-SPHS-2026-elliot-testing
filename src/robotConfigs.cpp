@@ -5,7 +5,7 @@
 #include "intake.h"
 
 // left motor group
-pros::MotorGroup left_motor_group({-15, -13}, pros::MotorGears::blue);
+pros::MotorGroup left_motor_group({-15, -12}, pros::MotorGears::blue);
 // right motor group
 pros::MotorGroup right_motor_group({19, 11}, pros::MotorGears::blue);
 
