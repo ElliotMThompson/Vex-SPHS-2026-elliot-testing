@@ -3,6 +3,7 @@
 #include "robotConfigs.h"
 #include "lift.h"
 #include "intake.h"
+#include "scoring.h"
 
 // input curve for throttle input during driver control
 lemlib::ExpoDriveCurve throttle_curve(3, // joystick deadband out of 127
@@ -61,6 +62,30 @@ void competitionDriver() {
         else {
             intakeStop();
         }
+
+        // Scoring Flex Wheel Controls
+        if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+            scoringAccept();
+        }
+        else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+            scoringReject();
+        }
+        else {
+            scoringWheelsStop();
+        }
+
+        // Scoring Mechanism Flip
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
+            changeScoringDirection();
+        }
+
+        if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
+            scoringFlip();
+        }
+        else {
+            scoringFlipStop();
+        }
+
         // Delay to prevent overloading the controller
         pros::delay(25);
 
@@ -95,14 +120,37 @@ void skillsDriver() {
         }
 
         //intake Controls
-        if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
+        if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
             intakeAccept();
         }
-        else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
+        else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
             intakeReject();
         }
         else {
             intakeStop();
+        }
+
+        // Scoring Flex Wheel Controls
+        if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
+            scoringAccept();
+        }
+        else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
+            scoringReject();
+        }
+        else {
+            scoringWheelsStop();
+        }
+
+        // Scoring Mechanism Flip
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
+            changeScoringDirection();
+        }
+
+        if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
+            scoringFlip();
+        }
+        else {
+            scoringFlipStop();
         }
 
         // Delay to prevent overloading the controller
@@ -144,4 +192,3 @@ void practiceDriver() {
         skillsDriver();
     } 
 }
-

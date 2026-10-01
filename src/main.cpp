@@ -3,6 +3,7 @@
 #include "opcontrol.h"
 #include "lift.h"
 #include "intake.h"
+#include "scoring.h"
 
 // ==============================
 // Driver Profile Selector
@@ -87,6 +88,7 @@ void initialize() {
 
     selectDriverMode(); // allows the user to select the driver mode (competition, skills, or practice)
     liftSetup(); // sets the lift motors to hold position when stopped
+    scoringSetup();
     pros::Task screen_task(updateScreenTask);
 }
 

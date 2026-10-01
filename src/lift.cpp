@@ -6,10 +6,10 @@
 # include "intake.h"
 
 // two motors for the lift
-pros::MotorGroup liftMotors({16, -20}, pros::MotorGears::green);
+pros::MotorGroup liftMotors({10, -16}, pros::MotorGears::green);
 
 // speed of the lift
-int liftSpeed = 40;
+int liftSpeed = 127;
 
 // motors for lift always hold until a button is pressed to change it (idk if needed)
 void liftSetup() {
