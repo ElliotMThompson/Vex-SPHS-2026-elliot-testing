@@ -7,8 +7,8 @@ pros::Motor scoringWheels(8);
 // Scoring mechanism flip motor
 pros::Motor scoringFlipMotor(9);
 
-int scoringSpeed = 100;
-int scoringFlipSpeed = 80;
+int scoringSpeed = 80;
+int scoringFlipSpeed = 45;
 
 // false = move toward resting position
 // true = move toward scoring/perpendicular position
