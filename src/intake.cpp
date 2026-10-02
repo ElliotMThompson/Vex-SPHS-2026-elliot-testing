@@ -7,7 +7,7 @@
 pros::MotorGroup intake_motors({20, -17}, pros::MotorGears::green);
 
 // speed of the intake
-int intakeSpeed = 55;
+int intakeSpeed = 90;
 
 //lift initializer
 void intakeSetup() {
