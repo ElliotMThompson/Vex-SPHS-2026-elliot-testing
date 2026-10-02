@@ -8,7 +8,17 @@
 // ==============================
 // Driver Curve Settings
 // ==============================
+lemlib::ExpoDriveCurve throttle_curve(
+    3,
+    10,
+    1.019
+);
 
+lemlib::ExpoDriveCurve steer_curve(
+    3,
+    10,
+    1.019
+);
 // Competition / Ansh
 double anshSteerExpo = 1.019;
 double anshThrottleExpo = 1.019;
