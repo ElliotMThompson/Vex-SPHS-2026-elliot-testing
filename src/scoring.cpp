@@ -30,6 +30,7 @@ void scoringWheelsStop() {
     scoringWheels.move(0);
 }
 
+// Used by Eva's profile
 void scoringFlip() {
     if (scoringDirection == false) {
         scoringFlipMotor.move(scoringFlipSpeed);
@@ -37,6 +38,16 @@ void scoringFlip() {
     else {
         scoringFlipMotor.move(-scoringFlipSpeed);
     }
+}
+
+// Used by Ansh's profile
+void scoringFlipUp() {
+    scoringFlipMotor.move(-scoringFlipSpeed);
+}
+
+// Used by Ansh's profile
+void scoringFlipDown() {
+    scoringFlipMotor.move(scoringFlipSpeed);
 }
 
 void scoringFlipStop() {

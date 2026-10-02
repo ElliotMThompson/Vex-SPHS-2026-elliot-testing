@@ -19,6 +19,7 @@ lemlib::ExpoDriveCurve steer_curve(
     10,
     1.019
 );
+
 // Competition / Ansh
 double anshSteerExpo = 1.019;
 double anshThrottleExpo = 1.019;
@@ -175,12 +176,12 @@ void competitionDriver() {
     }
 
     // Scoring Mechanism Flip
-    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
-        changeScoringDirection();
-    }
-
+    // Ansh: UP moves one direction, DOWN moves the other
     if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
-        scoringFlip();
+        scoringFlipUp();
+    }
+    else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
+        scoringFlipDown();
     }
     else {
         scoringFlipStop();
@@ -272,6 +273,7 @@ void skillsDriver() {
     }
 
     // Scoring Mechanism Flip
+    // Eva keeps the original toggle system
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
         changeScoringDirection();
     }
