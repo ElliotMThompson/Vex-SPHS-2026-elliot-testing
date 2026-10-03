@@ -130,7 +130,7 @@ void competitionDriver() {
 
     // Arcade Drive
     // true disables LemLib's built-in chassis curves because
-    // we already applied our adjustable curves above
+    // we already applied adjustable curves above
     chassis.arcade(
         curvedThrottle,
         curvedSteer,
