@@ -1,4 +1,4 @@
- // gives file access to the lift and main files
+// gives file access to the lift and main files
 # include "lift.h"
 # include "main.h"
 # include "opcontrol.h"
@@ -14,6 +14,7 @@ int liftSpeed = 127;
 // motors for lift always hold until a button is pressed to change it (idk if needed)
 void liftSetup() {
     liftMotors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    resetLiftPosition();
 }
 
 // three lift commands
@@ -28,4 +29,14 @@ void liftDown() {
 // stops the lift
 void liftStop() {
     liftMotors.move(0);
+}
+
+// gets the current lift motor position
+double getLiftPosition() {
+    return liftMotors.get_position(0);
+}
+
+// makes the current lift position 0
+void resetLiftPosition() {
+    liftMotors.tare_position();
 }
