@@ -2,9 +2,9 @@
 #define _PROS_OP_CONTROL_H_
 #include "main.h"
 #include "lemlib/api.hpp"
+
 #pragma once
 
-void driverControl();
 
 // Driver profiles
 void competitionDriver();

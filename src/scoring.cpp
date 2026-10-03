@@ -16,6 +16,7 @@ bool scoringDirection = true;
 
 void scoringSetup() {
     scoringMech.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    resetScoringMechPosition();
 }
 
 void scoringMechUp() {
@@ -56,4 +57,14 @@ void scoringWheelsStop() {
 
 void changeScoringDirection() {
     scoringDirection = !scoringDirection;
+}
+
+// gets the current scoring mechanism position
+double getScoringMechPosition() {
+    return scoringMech.get_position();
+}
+
+// makes the current scoring mechanism position 0
+void resetScoringMechPosition() {
+    scoringMech.tare_position();
 }

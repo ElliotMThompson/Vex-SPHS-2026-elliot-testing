@@ -4,10 +4,10 @@
 #include "lift.h"
 #include "intake.h"
 #include "scoring.h"
+#include "scoringMacro.h"
 
-// ==============================
+
 // Driver Curve Settings
-// ==============================
 lemlib::ExpoDriveCurve throttle_curve(
     3,
     10,
@@ -34,6 +34,7 @@ DriverMode driverMode = PRACTICE; // default driver mode is practice
 
 bool practiceSkills = false; // Allows practice driver to switch between competition and skills driver profiles WITHOUT changing the Current Mode
 
+
 // Driver Curve Adjustment
 
 void updateDriverCurves(double &steerExpo, double &throttleExpo) {
@@ -42,33 +43,34 @@ void updateDriverCurves(double &steerExpo, double &throttleExpo) {
         pros::E_CONTROLLER_DIGITAL_Y
     );
 
-    // DOWN arrow
-    if (controller.get_digital_new_press(
-        pros::E_CONTROLLER_DIGITAL_DOWN
-    )) {
+    if (yHeld) {
 
-        if (yHeld) {
-            // y and down arrow = decrease throttle sens
-            throttleExpo -= 0.001;
-        }
-        else {
-            // down arrow = decrease steering sens
+        // Y + LEFT = decrease steering sensitivity
+        if (controller.get_digital_new_press(
+            pros::E_CONTROLLER_DIGITAL_LEFT
+        )) {
             steerExpo -= 0.001;
         }
-    }
 
-    // RIGHT arrow
-    if (controller.get_digital_new_press(
-        pros::E_CONTROLLER_DIGITAL_RIGHT
-    )) {
-
-        if (yHeld) {
-            // Y + RIGHT = increase throttle sensitivity
-            throttleExpo += 0.001;
-        }
-        else {
-            // RIGHT = increase steering sensitivity
+        // Y + RIGHT = increase steering sensitivity
+        if (controller.get_digital_new_press(
+            pros::E_CONTROLLER_DIGITAL_RIGHT
+        )) {
             steerExpo += 0.001;
+        }
+
+        // Y + DOWN = decrease throttle sensitivity
+        if (controller.get_digital_new_press(
+            pros::E_CONTROLLER_DIGITAL_DOWN
+        )) {
+            throttleExpo -= 0.001;
+        }
+
+        // Y + UP = increase throttle sensitivity
+        if (controller.get_digital_new_press(
+            pros::E_CONTROLLER_DIGITAL_UP
+        )) {
+            throttleExpo += 0.001;
         }
     }
 
@@ -101,6 +103,20 @@ void competitionDriver() {
         anshSteerExpo,
         anshThrottleExpo
     );
+
+    bool yHeld = controller.get_digital(
+        pros::E_CONTROLLER_DIGITAL_Y
+    );
+
+    // DOWN arrow starts/reverses scoring macro
+    if (
+        !yHeld &&
+        controller.get_digital_new_press(
+            pros::E_CONTROLLER_DIGITAL_DOWN
+        )
+    ) {
+        startScoringMacro();
+    }
 
     // Drive Controls
     int leftY = controller.get_analog(
@@ -138,40 +154,53 @@ void competitionDriver() {
     );
 
     // Lift Controls
-    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
-        liftUp();
-    }
-    else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
-        liftDown();
-    }
-    else {
-        liftStop();
+    if (!isScoringMacroRunning()) {
+
+        if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
+            liftUp();
+        }
+        else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
+            liftDown();
+        }
+        else {
+            liftStop();
+        }
     }
 
     // Intake Controls
-    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
-        intakeAccept();
-    }
-    else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-        intakeReject();
-    }
-    else {
-        intakeStop();
-    }
+bool intakeAcceptHeld =
+    controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2);
+
+if (intakeAcceptHeld) {
+    intakeAccept();
+}
+else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+    intakeReject();
+}
+else {
+    intakeStop();
+}
 
     // Scoring Mechanism Up/Down Controls
-    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-        scoringMechUp();
-    }
-    else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
-        scoringMechDown();
-    }
-    else {
-        scoringMechStop();
+    if (!isScoringMacroRunning()) {
+
+        if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+            scoringMechUp();
+        }
+        else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+            scoringMechDown();
+        }
+        else {
+            scoringMechStop();
+        }
     }
 
     // Scoring Flex Wheel Controls
-    // Ansh: UP moves one direction, LEFT moves the other
+// Intake accept always makes the scoring wheels accept
+if (intakeAcceptHeld) {
+    scoringWheelsAccept();
+}
+else if (!yHeld) {
     if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
         scoringWheelsAccept();
     }
@@ -181,6 +210,13 @@ void competitionDriver() {
     else {
         scoringWheelsStop();
     }
+}
+else {
+    scoringWheelsStop();
+}
+
+    // Run scoring macro
+    updateScoringMacro();
 
     // Delay to prevent overloading the controller
     pros::delay(25);
@@ -196,6 +232,20 @@ void skillsDriver() {
         evaSteerExpo,
         evaThrottleExpo
     );
+
+    bool yHeld = controller.get_digital(
+        pros::E_CONTROLLER_DIGITAL_Y
+    );
+
+    // DOWN arrow starts/reverses scoring macro
+    if (
+        !yHeld &&
+        controller.get_digital_new_press(
+            pros::E_CONTROLLER_DIGITAL_DOWN
+        )
+    ) {
+        startScoringMacro();
+    }
 
     // Drivetrain Controls
     int leftY = controller.get_analog(
@@ -233,40 +283,52 @@ void skillsDriver() {
     );
 
     // Lift Controls
-    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
-        liftUp();
-    }
-    else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-        liftDown();
-    }
-    else {
-        liftStop();
+    if (!isScoringMacroRunning()) {
+
+        if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+            liftUp();
+        }
+        else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+            liftDown();
+        }
+        else {
+            liftStop();
+        }
     }
 
     // Intake Controls
-    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-        intakeAccept();
-    }
-    else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
-        intakeReject();
-    }
-    else {
-        intakeStop();
-    }
+bool intakeAcceptHeld =
+    controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
 
+if (intakeAcceptHeld) {
+    intakeAccept();
+}
+else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+    intakeReject();
+}
+else {
+    intakeStop();
+}
     // Scoring Mechanism Up/Down Controls
-    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
-        scoringMechUp();
-    }
-    else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
-        scoringMechDown();
-    }
-    else {
-        scoringMechStop();
+    if (!isScoringMacroRunning()) {
+
+        if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
+            scoringMechUp();
+        }
+        else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
+            scoringMechDown();
+        }
+        else {
+            scoringMechStop();
+        }
     }
 
-    // Scoring Flex Wheel Controls
-    // Eva keeps the original toggle system
+// Scoring Flex Wheel Controls
+// Intake accept always makes the scoring wheels accept
+if (intakeAcceptHeld) {
+    scoringWheelsAccept();
+}
+else if (!yHeld) {
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
         changeScoringDirection();
     }
@@ -277,6 +339,13 @@ void skillsDriver() {
     else {
         scoringWheelsStop();
     }
+}
+else {
+    scoringWheelsStop();
+}
+
+    // Run scoring macro
+    updateScoringMacro();
 
     // Delay to prevent overloading the controller
     pros::delay(25);

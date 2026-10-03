@@ -5,9 +5,8 @@
 #include "intake.h"
 #include "scoring.h"
 
-// ==============================
+
 // Driver Profile Selector
-// ==============================   
 
 void updateScreenTask() {
     while (true) {
@@ -89,7 +88,7 @@ void initialize() {
     selectDriverMode(); // allows the user to select the driver mode (competition, skills, or practice)
     liftSetup(); // sets the lift motors to hold position when stopped
     intakeSetup(); // sets the intake motors to hold position when stopped
-    scoringSetup(); // sets the scoring flip motor to hold position when stopped
+    scoringSetup(); // sets the scoring mechanism motor to hold position when stopped
     pros::Task screen_task(updateScreenTask);
 }
 
