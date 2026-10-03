@@ -34,10 +34,7 @@ DriverMode driverMode = PRACTICE; // default driver mode is practice
 
 bool practiceSkills = false; // Allows practice driver to switch between competition and skills driver profiles WITHOUT changing the Current Mode
 
-
-// ==============================
 // Driver Curve Adjustment
-// ==============================
 
 void updateDriverCurves(double &steerExpo, double &throttleExpo) {
 
@@ -45,17 +42,17 @@ void updateDriverCurves(double &steerExpo, double &throttleExpo) {
         pros::E_CONTROLLER_DIGITAL_Y
     );
 
-    // LEFT arrow
+    // DOWN arrow
     if (controller.get_digital_new_press(
-        pros::E_CONTROLLER_DIGITAL_LEFT
+        pros::E_CONTROLLER_DIGITAL_DOWN
     )) {
 
         if (yHeld) {
-            // Y + LEFT = decrease throttle sensitivity
+            // y and down arrow = decrease throttle sens
             throttleExpo -= 0.001;
         }
         else {
-            // LEFT = decrease steering sensitivity
+            // down arrow = decrease steering sens
             steerExpo -= 0.001;
         }
     }
@@ -95,9 +92,7 @@ void updateDriverCurves(double &steerExpo, double &throttleExpo) {
 }
 
 
-// ==============================
 // Competition driver profile
-// ==============================
 
 void competitionDriver() {
 
@@ -164,27 +159,27 @@ void competitionDriver() {
         intakeStop();
     }
 
-    // Scoring Flex Wheel Controls
+    // Scoring Mechanism Up/Down Controls
     if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-        scoringAccept();
+        scoringMechUp();
     }
     else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
-        scoringReject();
+        scoringMechDown();
+    }
+    else {
+        scoringMechStop();
+    }
+
+    // Scoring Flex Wheel Controls
+    // Ansh: UP moves one direction, LEFT moves the other
+    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
+        scoringWheelsAccept();
+    }
+    else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)) {
+        scoringWheelsReject();
     }
     else {
         scoringWheelsStop();
-    }
-
-    // Scoring Mechanism Flip
-    // Ansh: UP moves one direction, DOWN moves the other
-    if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
-        scoringFlipUp();
-    }
-    else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
-        scoringFlipDown();
-    }
-    else {
-        scoringFlipStop();
     }
 
     // Delay to prevent overloading the controller
@@ -192,9 +187,7 @@ void competitionDriver() {
 }
 
 
-// ==============================
 // Skills driver profile
-// ==============================
 
 void skillsDriver() {
 
@@ -261,28 +254,28 @@ void skillsDriver() {
         intakeStop();
     }
 
-    // Scoring Flex Wheel Controls
+    // Scoring Mechanism Up/Down Controls
     if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
-        scoringAccept();
+        scoringMechUp();
     }
     else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
-        scoringReject();
+        scoringMechDown();
     }
     else {
-        scoringWheelsStop();
+        scoringMechStop();
     }
 
-    // Scoring Mechanism Flip
+    // Scoring Flex Wheel Controls
     // Eva keeps the original toggle system
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
         changeScoringDirection();
     }
 
     if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
-        scoringFlip();
+        scoringWheels();
     }
     else {
-        scoringFlipStop();
+        scoringWheelsStop();
     }
 
     // Delay to prevent overloading the controller
@@ -290,9 +283,7 @@ void skillsDriver() {
 }
 
 
-// ==============================
 // Practice driver profile
-// ==============================
 
 void practiceDriver() {
 

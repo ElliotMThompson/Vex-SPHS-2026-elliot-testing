@@ -2,12 +2,13 @@
 
 void scoringSetup();
 
-void scoringAccept();
-void scoringReject();
+void scoringMechUp();
+void scoringMechDown();
+void scoringMechStop();
+
+void scoringWheels();
+void scoringWheelsAccept();
+void scoringWheelsReject();
 void scoringWheelsStop();
 
-void scoringFlip();
-void scoringFlipUp();
-void scoringFlipDown();
-void scoringFlipStop();
 void changeScoringDirection();

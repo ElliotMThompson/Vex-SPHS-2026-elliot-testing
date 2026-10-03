@@ -1,57 +1,57 @@
 #include "scoring.h"
 #include "main.h"
 
+// Scoring mechanism up/down motor
+pros::Motor scoringMech(8);
+
 // Scoring flex wheel motor
-pros::Motor scoringWheels(8);
+pros::Motor scoringWheelMotor(9);
 
-// Scoring mechanism flip motor
-pros::Motor scoringFlipMotor(9);
+int scoringMechSpeed = 80;
+int scoringWheelsSpeed = 45;
 
-int scoringSpeed = 80;
-int scoringFlipSpeed = 45;
-
-// false = move toward resting position
-// true = move toward scoring/perpendicular position
+// false = flex wheels move one direction
+// true = flex wheels move the other direction
 bool scoringDirection = true;
 
 void scoringSetup() {
-    scoringFlipMotor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    scoringMech.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 }
 
-void scoringAccept() {
-    scoringWheels.move(scoringSpeed);
+void scoringMechUp() {
+    scoringMech.move(scoringMechSpeed);
 }
 
-void scoringReject() {
-    scoringWheels.move(-scoringSpeed);
+void scoringMechDown() {
+    scoringMech.move(-scoringMechSpeed);
 }
 
-void scoringWheelsStop() {
-    scoringWheels.move(0);
+void scoringMechStop() {
+    scoringMech.move(0);
 }
 
 // Used by Eva's profile
-void scoringFlip() {
+void scoringWheels() {
     if (scoringDirection == false) {
-        scoringFlipMotor.move(scoringFlipSpeed);
+        scoringWheelMotor.move(scoringWheelsSpeed);
     }
     else {
-        scoringFlipMotor.move(-scoringFlipSpeed);
+        scoringWheelMotor.move(-scoringWheelsSpeed);
     }
 }
 
 // Used by Ansh's profile
-void scoringFlipUp() {
-    scoringFlipMotor.move(-scoringFlipSpeed);
+void scoringWheelsAccept() {
+    scoringWheelMotor.move(-scoringWheelsSpeed);
 }
 
 // Used by Ansh's profile
-void scoringFlipDown() {
-    scoringFlipMotor.move(scoringFlipSpeed);
+void scoringWheelsReject() {
+    scoringWheelMotor.move(scoringWheelsSpeed);
 }
 
-void scoringFlipStop() {
-    scoringFlipMotor.move(0);
+void scoringWheelsStop() {
+    scoringWheelMotor.move(0);
 }
 
 void changeScoringDirection() {
