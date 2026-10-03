@@ -15,7 +15,8 @@ double macroLiftTargetPosition = 150;
 
 // Final scoring mechanism position
 double macroScoringTargetPosition = 100;
-
+// How long the scoring wheels accept during the scoring macro
+int macroScoringWheelsTime = 750;
 // How close the motors need to be to count as finished
 double macroPositionTolerance = 5;
 
@@ -34,7 +35,8 @@ ScoringMacroState scoringMacroState = MACRO_IDLE;
 // false = robot is in resting setup
 // true = robot is in scoring setup
 bool scoringPositionActive = false;
-
+// Remembers when the scoring wheels started running
+uint32_t scoringWheelsStartTime = 0;
 
 // Start Macro
 
@@ -79,6 +81,7 @@ void updateScoringMacro() {
 
         // Cascade has cleared enough for scoring mech to start
         if (getLiftPosition() >= macroLiftStartScoringPosition) {
+            scoringWheelsStartTime = pros::millis();
             scoringMacroState = MACRO_RAISING_BOTH;
         }
     }
@@ -104,6 +107,14 @@ void updateScoringMacro() {
             scoringMechStop();
         }
 
+        // Keep scoring wheels accepting for the adjustable amount of time
+        if (pros::millis() - scoringWheelsStartTime < macroScoringWheelsTime) {
+            scoringWheelsAccept();
+        }
+        else {
+            scoringWheelsStop();
+        }
+
         // Both reached their targets
         if (
             getLiftPosition() >=
@@ -114,6 +125,7 @@ void updateScoringMacro() {
         ) {
             liftStop();
             scoringMechStop();
+            scoringWheelsStop();
 
             scoringMacroState = MACRO_IDLE;
         }
@@ -123,6 +135,8 @@ void updateScoringMacro() {
     // Return Everything to Rest
 
     else if (scoringMacroState == MACRO_RETURNING) {
+
+        scoringWheelsStop();
 
         // Return cascade to 0
         if (getLiftPosition() > macroPositionTolerance) {
@@ -163,4 +177,4 @@ bool isScoringMacroRunning() {
 
 bool isScoringPositionActive() {
     return scoringPositionActive;
-}   
+}

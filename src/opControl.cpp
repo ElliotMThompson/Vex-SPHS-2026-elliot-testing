@@ -218,6 +218,12 @@ else {
     // Run scoring macro
     updateScoringMacro();
 
+printf(
+    "Lift: %.2f | Scoring: %.2f\n",
+    getLiftPosition(),
+    getScoringMechPosition()
+);
+
     // Delay to prevent overloading the controller
     pros::delay(25);
 }
@@ -346,6 +352,12 @@ else {
 
     // Run scoring macro
     updateScoringMacro();
+
+printf(
+    "Lift: %.2f | Scoring: %.2f\n",
+    getLiftPosition(),
+    getScoringMechPosition()
+);
 
     // Delay to prevent overloading the controller
     pros::delay(25);
