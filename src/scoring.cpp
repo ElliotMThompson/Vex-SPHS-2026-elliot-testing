@@ -8,6 +8,13 @@ pros::Motor scoringMech(8);
 pros::Motor scoringWheelMotor(9);
 
 int scoringMechSpeed = 80;
+// The idea is the take scoringMechFalsePosition and instead of having
+// scoring mech motor change, change it idtead.
+// and move the scoring mech motor to match it at the snaped values
+int scoringMechAngleSnap = 7.5;
+int scoringMechAngleChange = 5;
+int scoringMechFalsePosition = getScoringMechPosition();
+//
 int scoringWheelsSpeed = 45;
 
 // false = flex wheels move one direction
@@ -20,11 +27,15 @@ void scoringSetup() {
 }
 
 void scoringMechUp() {
-    scoringMech.move(scoringMechSpeed);
+    scoringMechFalsePosition += scoringMechAngleChange;
+    int scoringMechFalsePositionSnapped = round(scoringMechFalsePosition / scoringMechAngleSnap) * scoringMechAngleSnap;
+    scoringMech.moveAbsolute(scoringMechFalsePositionSnapped, scoringMechSpeed);
 }
 
 void scoringMechDown() {
-    scoringMech.move(-scoringMechSpeed);
+    scoringMechFalsePosition -= scoringMechAngleChange;
+    int scoringMechFalsePositionSnapped = round(scoringMechFalsePosition / scoringMechAngleSnap) * scoringMechAngleSnap;
+    scoringMech.moveAbsolute(scoringMechFalsePositionSnapped, scoringMechSpeed);
 }
 
 void scoringMechStop() {
