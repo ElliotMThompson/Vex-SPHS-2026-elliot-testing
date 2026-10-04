@@ -8,17 +8,20 @@
 bool scoringMacroEnabled = true;
 
 // How far the cascade moves before scoring mech starts
-double macroLiftStartScoringPosition = 50;
+double macroLiftStartScoringPosition = 450;
 
 // Final cascade position
-double macroLiftTargetPosition = 150;
+double macroLiftTargetPosition = 580;
 
 // Final scoring mechanism position
-double macroScoringTargetPosition = 100;
+double macroScoringTargetPosition = 600;
 // How long the scoring wheels accept during the scoring macro
 int macroScoringWheelsTime = 750;
 // How close the motors need to be to count as finished
-double macroPositionTolerance = 5;
+double macroPositionTolerance = 25;
+
+// Maximum amount of time the scoring macro can run
+int macroSafetyTimeout = 3000;
 
 
 // Scoring Macro State
@@ -27,7 +30,8 @@ enum ScoringMacroState {
     MACRO_IDLE,
     MACRO_RAISING_LIFT,
     MACRO_RAISING_BOTH,
-    MACRO_RETURNING
+    MACRO_RETURNING_LIFT,
+    MACRO_RETURNING_SCORING
 };
 
 ScoringMacroState scoringMacroState = MACRO_IDLE;
@@ -37,12 +41,56 @@ ScoringMacroState scoringMacroState = MACRO_IDLE;
 bool scoringPositionActive = false;
 // Remembers when the scoring wheels started running
 uint32_t scoringWheelsStartTime = 0;
+// Remembers when the scoring macro started running
+uint32_t scoringMacroStartTime = 0;
+// Remembers if the last macro movement timed out
+bool scoringMacroTimedOut = false;
+// Remembers which direction the macro was moving before timeout
+bool scoringMacroTimedOutGoingUp = false;
 
 // Start Macro
 
 void startScoringMacro() {
 
     if (scoringMacroEnabled == false) {
+        return;
+    }
+
+    // Start safety timer
+    scoringMacroStartTime = pros::millis();
+
+    // Retry the same movement if the last macro timed out
+    if (scoringMacroTimedOut == true) {
+
+        scoringMacroTimedOut = false;
+
+        if (scoringMacroTimedOutGoingUp == true) {
+
+            scoringPositionActive = true;
+
+            // If cascade already cleared the starting position, continue both
+            if (getLiftPosition() >= macroLiftStartScoringPosition) {
+                scoringWheelsStartTime = pros::millis();
+                scoringMacroState = MACRO_RAISING_BOTH;
+            }
+            else {
+                scoringMacroState = MACRO_RAISING_LIFT;
+            }
+        }
+
+        else {
+
+            scoringPositionActive = false;
+
+            // If cascade is already at the bottom, continue lowering scoring mech
+            if (getLiftPosition() <= macroPositionTolerance) {
+                scoringMacroState = MACRO_RETURNING_SCORING;
+            }
+            else {
+                scoringMacroState = MACRO_RETURNING_LIFT;
+            }
+        }
+
         return;
     }
 
@@ -57,7 +105,7 @@ void startScoringMacro() {
     else {
 
         scoringPositionActive = false;
-        scoringMacroState = MACRO_RETURNING;
+        scoringMacroState = MACRO_RETURNING_LIFT;
     }
 }
 
@@ -68,6 +116,30 @@ void updateScoringMacro() {
 
     // Nothing to do
     if (scoringMacroState == MACRO_IDLE) {
+        return;
+    }
+
+    // Stop everything if the macro has been running for too long
+    if (pros::millis() - scoringMacroStartTime >= macroSafetyTimeout) {
+
+        if (
+            scoringMacroState == MACRO_RAISING_LIFT
+            ||
+            scoringMacroState == MACRO_RAISING_BOTH
+        ) {
+            scoringMacroTimedOutGoingUp = true;
+        }
+        else {
+            scoringMacroTimedOutGoingUp = false;
+        }
+
+        scoringMacroTimedOut = true;
+
+        liftStop();
+        scoringMechStop();
+        scoringWheelsStop();
+
+        scoringMacroState = MACRO_IDLE;
         return;
     }
 
@@ -134,17 +206,27 @@ void updateScoringMacro() {
 
     // Return Everything to Rest
 
-    else if (scoringMacroState == MACRO_RETURNING) {
+    else if (scoringMacroState == MACRO_RETURNING_LIFT) {
 
         scoringWheelsStop();
 
         // Return cascade to 0
         if (getLiftPosition() > macroPositionTolerance) {
             liftDown();
+            scoringMechStop();
         }
         else {
             liftStop();
+            scoringMechStop();
+
+            scoringMacroState = MACRO_RETURNING_SCORING;
         }
+    }
+
+    else if (scoringMacroState == MACRO_RETURNING_SCORING) {
+
+        scoringWheelsStop();
+        liftStop();
 
         // Return scoring mechanism to 0
         if (getScoringMechPosition() > macroPositionTolerance) {
